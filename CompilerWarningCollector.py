@@ -11,12 +11,13 @@ D:\a\1\s\Src\SelfTest\SelfTest_Errors.c:98:31: warning: cast to pointer from int
                                ^
 """
 
-
+# For regex use the
+# https://regex101.com/r/0rW3Bo/1/
 COMPILER_WARNING_CHECKERS = [
     {
         "CompilerName": "MSVC",
         "AutoDetect": None,
-        "WarningChecker": r"(?P<FilePath>[\:\\\/\w\s\(\)\_\-\.]+)[\\|\/](?P<FileName>[\w\_\-]+\.[\w]*)\((?P<LineNumber>[\d]+),(?P<ColumnIndex>[\d]+)\)\: warning C(?P<WarningId>[\d]+)\: (?P<WarningMessage>[^[]*)\[",
+        "WarningChecker": r"(?P<FilePath>[\:\\\/\w \(\)\_\-\.]+)[\\|\/](?P<FileName>[\w\_\-]+\.[\w]*)\((?P<LineNumber>[\d]+),(?P<ColumnIndex>[\d]+)\)\: warning C(?P<WarningId>[\d]+)\: (?P<WarningMessage>[^[]*)\[",
         "ExampleText": [
             r"""
             MSVC
@@ -57,7 +58,7 @@ def check_text(text, compiler="MSVC"):
 
     return warning_list
 
-    # TODO:
+    # TODO: delete or refactor
     """
     match = re.findall(regex_warning, text)
 
