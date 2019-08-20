@@ -1,0 +1,2 @@
+# CompilerWarningCollector
+Collect compiler warnings
