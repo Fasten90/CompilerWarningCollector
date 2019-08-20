@@ -1,5 +1,7 @@
 
 import re
+from pathlib import Path
+import os
 
 
 # TODO: Move
@@ -69,10 +71,29 @@ def check_text(text, compiler="MSVC"):
     """
 
 
+def check_files(file_list=None, compiler="MSVC"):
 
+    if file_list is None:
+        # Check all logs
+        for filename in Path("..").glob("**/*.log"):
+            print("Filename: {}".format(filename))
+            #filepath = os.path.join("..", filename)
+            with open(filename, "r") as file:
+                file_content = file.read()
+                warning_list = check_text(text=file_content)
+                warning_string = "".join("    " + item for item in warning_list)
+                if len(warning_string) != 0:
+                    print("Found warning at file '{}'\n"
+                          "{}".format(
+                                filename, warning_string))
+                else:
+                    print("Not found warning at file '{}'".format(filename))
 
 if __name__== "__main__":
-    text = \
+    local_mode = False
+
+    if local_mode:
+        text = \
 r"""
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(948,37): warning C4710:  'int printf(const char *const ,...)': function not inlined [D:\a\1\s\Out\CMakeBuild\FastenHomeAut.vcxproj]
   EventHandler.c
@@ -80,5 +101,8 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(948,37)
   GlobalVarHandler.c
   HomeAutMessage.c
 """
-    check_text(text, "MSVC")
+        check_text(text, "MSVC")
+    else:
+        # Pipeline mode
+        check_files()
 

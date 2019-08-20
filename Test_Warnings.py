@@ -13,6 +13,8 @@ class MyTestCase(unittest.TestCase):
             warning_list = CompilerWarningCollector.check_text(text, compiler_name)
             self.assertEqual(len(compiler["ExampleText"]), len(warning_list))
 
+    # TODO: Test: empty file at check_files()
+
 
 if __name__ == '__main__':
     unittest.main()
