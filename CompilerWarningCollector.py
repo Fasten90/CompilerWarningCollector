@@ -81,7 +81,7 @@ def check_files(file_list=None, compiler="MSVC"):
             with open(filename, "r") as file:
                 file_content = file.read()
                 warning_list = check_text(text=file_content)
-                warning_string = "".join("    " + item for item in warning_list)
+                warning_string = "".join("    " + str(item) for item in warning_list)
                 if len(warning_string) != 0:
                     print("Found warning at file '{}'\n"
                           "{}".format(
@@ -92,6 +92,7 @@ def check_files(file_list=None, compiler="MSVC"):
 if __name__== "__main__":
     local_mode = False
 
+    # TODO: Beautify
     if local_mode:
         text = \
 r"""
