@@ -44,18 +44,29 @@ COMPILER_WARNING_CHECKERS = [
     }
 ]
 
+def check_text(text, compiler="MSVC", debug=False):
 
-def check_text(text, compiler="MSVC"):
-    regex_warning = re.compile(COMPILER_WARNING_CHECKERS[0]["WarningChecker"])
+    # Find our compiler
+    compiler_found = None
+    for compiler_checker_item in COMPILER_WARNING_CHECKERS:
+        if compiler == compiler_checker_item["CompilerName"]:
+            compiler_found = compiler_checker_item
+            break
+
+    assert compiler_found
+
+    regex_warning = re.compile(compiler_found["WarningChecker"])
 
     # TOOD: Delete
     #for i, line in self.__file_content_enumerated_list:
     #    result = regex_text_full_line.match(line)
 
+    # Find warnings
     warning_list = []
     for m in regex_warning.finditer(text):
         # TODO: Debug code
-        print(m.groupdict())
+        if debug:
+            print(m.groupdict())
         warning_list.append(m.groupdict())
 
     return warning_list
