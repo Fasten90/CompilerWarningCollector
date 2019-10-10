@@ -40,7 +40,6 @@ COMPILER_WARNING_CHECKERS = [
               Generating Code...
             """
         ]
-
     }
 ]
 
@@ -91,21 +90,26 @@ def check_files(file_list=None, compiler="MSVC"):
             #filepath = os.path.join("..", filename)
             with open(filename, "r") as file:
                 file_content = file.read()
-                warning_list = check_text(text=file_content)
-                warning_string = "".join("    " + str(item) for item in warning_list)
+                warning_list = check_text(text=file_content, compiler=compiler)
+
+                warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
                 if len(warning_string) != 0:
-                    print("Found warning at file '{}'\n"
+                    print("Found warning(s) at file: '{}'\n"
                           "{}".format(
                                 filename, warning_string))
                 else:
                     print("Not found warning at file '{}'".format(filename))
+    else:
+        # TODO: has file_list
+        raise Exception("Not implemented")
+
 
 if __name__== "__main__":
     local_mode = False
 
     # TODO: Beautify
     if local_mode:
-        text = \
+        warning_example_text = \
 r"""
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(948,37): warning C4710:  'int printf(const char *const ,...)': function not inlined [D:\a\1\s\Out\CMakeBuild\FastenHomeAut.vcxproj]
   EventHandler.c
@@ -113,7 +117,7 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(948,37)
   GlobalVarHandler.c
   HomeAutMessage.c
 """
-        check_text(text, "MSVC")
+        check_text(warning_example_text, "MSVC")
     else:
         # Pipeline mode
         check_files()
