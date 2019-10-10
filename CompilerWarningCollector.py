@@ -43,6 +43,12 @@ COMPILER_WARNING_CHECKERS = [
     }
 ]
 
+# These paths will be filtered out
+FILTER_LIST = [
+    r"C:\Program Files (x86)"
+]
+
+
 def check_text(text, compiler="MSVC", debug=False):
 
     # Find our compiler
@@ -81,6 +87,45 @@ def check_text(text, compiler="MSVC", debug=False):
     """
 
 
+# warning_item["FilePath"]
+# warning_item["FileName"]
+# warning_item["LineNumber"]
+# warning_item["ColumnIndex"]
+# warning_item["WarningId"]
+# warning_item["WarningMessage"]
+
+
+def get_short_warning_string(warning):
+    file_path_with_file_name = os.path.join(warning["FilePath"], warning["FileName"])
+    return "{FileFullPath}:{LineNumber}:{ColumnIndex} [{WarningId}]:'{WarningMessage}'".format(
+        FileFullPath=file_path_with_file_name,
+        LineNumber=warning["LineNumber"],
+        ColumnIndex=warning["ColumnIndex"],
+        WarningId=warning["WarningId"],
+        WarningMessage=warning["WarningMessage"]
+        )
+
+
+# TODO: Simplier solution
+def warning_filter(warning_list):
+    warning_filtered_list = []
+    for warning_item in warning_list:
+        warning_file_path = os.path.normpath(warning_item["FilePath"])
+        warning_filtered = False
+        for filter_path in FILTER_LIST:
+            filter_path_normalized = os.path.normpath(filter_path)
+            if filter_path_normalized in warning_file_path:
+                # Found in filter list
+                print("Warning filtered out: {}".format(get_short_warning_string(warning_item)))
+                warning_filtered = True
+                break  # Found, not need to find next
+
+        if not warning_filtered:
+            warning_filtered_list.append(warning_item)
+
+    return warning_filtered_list
+
+
 def check_files(file_list=None, compiler="MSVC"):
 
     if file_list is None:
@@ -91,6 +136,8 @@ def check_files(file_list=None, compiler="MSVC"):
             with open(filename, "r") as file:
                 file_content = file.read()
                 warning_list = check_text(text=file_content, compiler=compiler)
+                # Filter
+                warning_list = warning_filter(warning_list)
 
                 warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
                 if len(warning_string) != 0:
