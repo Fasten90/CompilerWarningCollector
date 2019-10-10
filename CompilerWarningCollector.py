@@ -126,6 +126,40 @@ def warning_filter(warning_list):
     return warning_filtered_list
 
 
+def translate_relative_paths(warning_list):
+    pass
+    # TODO: Not too easy to check, what was the executing root at original log file
+    #cwd = os.getcwd()
+    # But this for the new executing situation
+    # Idea: Try check all path, and find the common part?
+
+
+def print_all_warning_as_list(warning_list):
+    warning_list_in_string = ""
+    for item in warning_list:
+        warning_string = get_short_warning_string(item)
+        print(warning_string)
+        warning_list_in_string += warning_string
+        warning_list_in_string += '\n'
+
+    return warning_list_in_string
+
+
+def print_all_warning_as_table(warning_list):
+    # For automatic colum size
+    #max(mylist, key=len)
+    for warning in warning_list:
+        file_path_with_file_name = os.path.join(warning["FilePath"], warning["FileName"])
+        warning_string = "{FileFullPath:80} | {LineNumber:4} | {ColumnIndex:3} | {WarningId:7} | {WarningMessage}".format(
+            FileFullPath=file_path_with_file_name,
+            LineNumber=warning["LineNumber"],
+            ColumnIndex=warning["ColumnIndex"],
+            WarningId=warning["WarningId"],
+            WarningMessage=warning["WarningMessage"]
+            )
+        print(warning_string)
+
+
 def check_files(file_list=None, compiler="MSVC"):
 
     if file_list is None:
@@ -139,11 +173,24 @@ def check_files(file_list=None, compiler="MSVC"):
                 # Filter
                 warning_list = warning_filter(warning_list)
 
-                warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
-                if len(warning_string) != 0:
-                    print("Found warning(s) at file: '{}'\n"
-                          "{}".format(
-                                filename, warning_string))
+                # TODO: Relative path
+
+                if len(warning_list) != 0:
+                    print("Found warning(s) at files:")
+                    # warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
+                    # print("Found warning(s) at file: '{}'\n"
+                    #     "{}".format(
+                    #            filename, warning_string))
+                    print("-" * 120)
+                    warning_list_in_string = print_all_warning_as_list(warning_list)
+                    print("-" * 120)
+                    print_all_warning_as_table(warning_list)
+                    print("-" * 120)
+
+                    export_filename = os.path.splitext(filename)[0] + "_found_warnings.txt"
+                    with open(export_filename, "w+") as export_file:
+                        export_file.write(warning_list_in_string)
+                        print("Warnings exported to '{}'".format(export_filename))
                 else:
                     print("Not found warning at file '{}'".format(filename))
     else:
