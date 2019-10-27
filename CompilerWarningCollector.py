@@ -180,7 +180,7 @@ def check_files(file_list=None, compiler="MSVC"):
         # Check all logs
     # else:  has file_list
 
-    for filename in Path("..").glob(file_list):
+    for filename in Path(".").glob(file_list):
         print("Filename: {}".format(filename))
         #filepath = os.path.join("..", filename)
         with open(filename, "r") as file:
