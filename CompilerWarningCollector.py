@@ -162,7 +162,7 @@ def print_all_warning_as_table(warning_list):
     #max(mylist, key=len)
     for warning in warning_list:
         file_path_with_file_name = os.path.join(warning["FilePath"], warning["FileName"])
-        warning_string = "{FileFullPath:80} | {LineNumber:4} | {ColumnIndex:3} | {WarningId:7} | {WarningMessage}".format(
+        warning_string = "| {FileFullPath:80} | {LineNumber:4} | {ColumnIndex:3} | {WarningId:7} | {WarningMessage}".format(
             FileFullPath=file_path_with_file_name,
             LineNumber=warning["LineNumber"],
             ColumnIndex=warning["ColumnIndex"],
