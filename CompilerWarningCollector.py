@@ -2,6 +2,7 @@
 import re
 from pathlib import Path
 import os
+import argparse
 
 
 # For regex use the
@@ -175,56 +176,47 @@ def print_all_warning_as_table(warning_list):
 def check_files(file_list=None, compiler="MSVC"):
 
     if file_list is None:
+        file_list = "**/*.log"
         # Check all logs
-        for filename in Path("..").glob("**/*.log"):
-            print("Filename: {}".format(filename))
-            #filepath = os.path.join("..", filename)
-            with open(filename, "r") as file:
-                file_content = file.read()
-                warning_list = check_text(text=file_content, compiler=compiler)
-                # Filter
-                warning_list = warning_filter(warning_list)
+    # else:  has file_list
 
-                # TODO: Relative path
+    for filename in Path("..").glob(file_list):
+        print("Filename: {}".format(filename))
+        #filepath = os.path.join("..", filename)
+        with open(filename, "r") as file:
+            file_content = file.read()
+            warning_list = check_text(text=file_content, compiler=compiler)
+            # Filter
+            warning_list = warning_filter(warning_list)
 
-                if len(warning_list) != 0:
-                    print("Found warning(s) at files:")
-                    # warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
-                    # print("Found warning(s) at file: '{}'\n"
-                    #     "{}".format(
-                    #            filename, warning_string))
-                    print("-" * 120)
-                    warning_list_in_string = print_all_warning_as_list(warning_list)
-                    print("-" * 120)
-                    print_all_warning_as_table(warning_list)
-                    print("-" * 120)
+            # TODO: Relative path
 
-                    export_filename = os.path.splitext(filename)[0] + "_found_warnings.txt"
-                    with open(export_filename, "w+") as export_file:
-                        export_file.write(warning_list_in_string)
-                        print("Warnings exported to '{}'".format(export_filename))
-                else:
-                    print("Not found warning at file '{}'".format(filename))
-    else:
-        # TODO: has file_list
-        raise Exception("Not implemented")
+            if len(warning_list) != 0:
+                print("Found warning(s) at files:")
+                # warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
+                # print("Found warning(s) at file: '{}'\n"
+                #     "{}".format(
+                #            filename, warning_string))
+                print("-" * 120)
+                warning_list_in_string = print_all_warning_as_list(warning_list)
+                print("-" * 120)
+                print_all_warning_as_table(warning_list)
+                print("-" * 120)
+
+                export_filename = os.path.splitext(filename)[0] + "_found_warnings.txt"
+                with open(export_filename, "w+") as export_file:
+                    export_file.write(warning_list_in_string)
+                    print("Warnings exported to '{}'".format(export_filename))
+            else:
+                print("Not found warning at file '{}'".format(filename))
 
 
-if __name__== "__main__":
-    local_mode = False
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
 
-    # TODO: Beautify
-    if local_mode:
-        warning_example_text = \
-r"""
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\stdio.h(948,37): warning C4710:  'int printf(const char *const ,...)': function not inlined [D:\a\1\s\Out\CMakeBuild\FastenHomeAut.vcxproj]
-  EventHandler.c
-  EventLog.c
-  GlobalVarHandler.c
-  HomeAutMessage.c
-"""
-        check_text(warning_example_text, "MSVC")
-    else:
-        # Pipeline mode
-        check_files()
+    parser.add_argument("-fl", "--file_list", help="List of analyzing files", default="**/*.log")
+    parser.add_argument("-cmp", "--compiler", help="Compiler", default="MSVC")
+
+    args = parser.parse_args()
+    check_files(file_list=args.file_list, compiler=args.compiler)
 
