@@ -4,21 +4,13 @@ from pathlib import Path
 import os
 
 
-# TODO: Move
-r"""
-
-D:\a\1\s\Src\SelfTest\SelfTest_Errors.c: In function 'SelfTest_Errors_MemFault':
-D:\a\1\s\Src\SelfTest\SelfTest_Errors.c:98:31: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-     uint32_t * wrongPointer = (uint32_t *)constValue; /* Set pointer address to an incorrect address */
-                               ^
-"""
-
 # For regex use the
-# https://regex101.com/r/0rW3Bo/1/
+# https://regex101.com/
 COMPILER_WARNING_CHECKERS = [
     {
         "CompilerName": "MSVC",
         "AutoDetect": None,
+        # https://regex101.com/r/0rW3Bo/1/
         "WarningChecker": r" *(?P<FilePath>[\:\\\/\w \(\)\_\-\.]+)[\\|\/](?P<FileName>[\w\_\-]+\.[\w]*)\((?P<LineNumber>[\d]+),(?P<ColumnIndex>[\d]+)\)\: warning C(?P<WarningId>[\d]+)\: (?P<WarningMessage>[^[]*)\[",
         "ExampleText": [
             r"""
@@ -39,6 +31,26 @@ COMPILER_WARNING_CHECKERS = [
               Font12x8.c
               Generating Code...
             """
+        ]
+    },
+    {
+        "CompilerName": "GCC",
+        "AutoDetect": None,
+        # https://regex101.com/r/uu9hHU/1
+        "WarningChecker": r" *(?P<FilePath>[\:\\\/\w \(\)\_\-\.]+)[\\|\/](?P<FileName>[\w\_\-]+\.[\w]*)\:(?P<LineNumber>[\d]+)\:(?P<ColumnIndex>[\d]+)\: warning\: (?P<WarningMessage>[^[]*) \[\-(?P<WarningId>[^[]+)\]",
+        "ExampleText": [
+r"""
+D:\a\1\s\Src\SelfTest\SelfTest_Errors.c: In function 'SelfTest_Errors_MemFault':
+D:\a\1\s\Src\SelfTest\SelfTest_Errors.c:98:31: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+     uint32_t * wrongPointer = (uint32_t *)constValue; /* Set pointer address to an incorrect address */
+                               ^
+""",
+"""
+D:\a\1\s\Src\Modules\EEPROM.c: In function 'EEPROM_Write':
+D:\a\1\s\Src\Modules\EEPROM.c:85:18: warning: comparison is always false due to limited range of data type [-Wtype-limits]
+     if ((address < EEPROM_ADDRESS_START) || ((address + size) > EEPROM_ADDRESS_END))
+                  ^
+"""
         ]
     }
 ]
@@ -106,7 +118,7 @@ def get_short_warning_string(warning):
         )
 
 
-# TODO: Simplier solution
+# TODO: Simpler solution
 def warning_filter(warning_list):
     warning_filtered_list = []
     for warning_item in warning_list:
