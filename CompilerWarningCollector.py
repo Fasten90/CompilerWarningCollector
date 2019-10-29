@@ -53,6 +53,34 @@ D:\a\1\s\Src\Modules\EEPROM.c:85:18: warning: comparison is always false due to 
                   ^
 """
         ]
+    },
+    {
+        # TODO: Now similar to GCC
+        "CompilerName": "Clang",
+        "AutoDetect": None,
+        # https://regex101.com/r/ti6emr/1
+        "WarningChecker": r" *(?P<FilePath>[\:\\\/\w \(\)\_\-\.]+)[\\|\/](?P<FileName>[\w\_\-]+\.[\w]*)\:(?P<LineNumber>[\d]+)\:(?P<ColumnIndex>[\d]+)\: warning\: (?P<WarningMessage>[^[]*) \[\-(?P<WarningId>[^[]+)\]",
+        # TODO: Warning code part + column not handled
+        "ExampleText":
+        [
+"""
+/home/vsts/work/1/s/Src/Common/Handler/HomeAutMessage.c:216:45: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    HomeAut_InformationType information = { 0 };
+                                            ^
+                                            {}
+""",
+"""
+/home/vsts/work/1/s/Src/Common/Handler/HomeAutMessage.c:629:49: warning: suggest braces around initialization of subobject [-Wmissing-braces]
+    HomeAut_InformationType testInformation = { 0 };
+                                                ^
+                                                {}
+""",
+"""
+/home/vsts/work/1/s/Src/List/CommandList.c:700:31: warning: for loop has empty body [-Wempty-body]
+    for (i = 0; i < 1000; i++);
+                              ^
+"""
+        ]
     }
 ]
 
