@@ -219,6 +219,8 @@ def check_files(file_list=None, compiler="MSVC"):
 
             # TODO: Relative path
 
+            export_filename = os.path.splitext(filename)[0] + "_found_warnings.txt"
+
             if len(warning_list) != 0:
                 print("Found warning(s) at files:")
                 # warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
@@ -231,12 +233,14 @@ def check_files(file_list=None, compiler="MSVC"):
                 print_all_warning_as_table(warning_list)
                 print("-" * 120)
 
-                export_filename = os.path.splitext(filename)[0] + "_found_warnings.txt"
+
                 with open(export_filename, "w+") as export_file:
                     export_file.write(warning_list_in_string)
                     print("Warnings exported to '{}'".format(export_filename))
             else:
                 print("Not found warning at file '{}'".format(filename))
+                # TODO: Temporary solution for creating empty file (do not fail pipeline at artifacting)
+                open(export_filename, 'a').close()
 
 
 if __name__ == "__main__":
