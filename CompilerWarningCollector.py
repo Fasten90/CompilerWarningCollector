@@ -3,6 +3,7 @@ import re
 from pathlib import Path
 import os
 import argparse
+import csv
 
 
 # For regex use the
@@ -201,6 +202,41 @@ def print_all_warning_as_table(warning_list):
         print(warning_string)
 
 
+def export_to_text_file(export_filename, warning_list):
+    if len(warning_list) != 0:
+        print("Found warning(s) at files:")
+        # warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
+        # print("Found warning(s) at file: '{}'\n"
+        #     "{}".format(
+        #            filename, warning_string))
+        print("-" * 120)
+        warning_list_in_string = print_all_warning_as_list(warning_list)
+        print("-" * 120)
+        print_all_warning_as_table(warning_list)
+        print("-" * 120)
+
+        with open(export_filename, "w+") as export_file:
+            export_file.write(warning_list_in_string)
+            print("Warnings exported to '{}'".format(export_filename))
+    else:
+        print("Not found warning at file '{}'".format(export_filename))
+        # TODO: Temporary solution for creating empty file (do not fail pipeline at artifacting)
+        open(export_filename, 'a').close()
+
+
+def export_to_csv(export_filename, warning_list):
+    with open(export_filename, mode='w') as csv_file:
+        fieldnames = ["FilePath", "FileName", "LineNumber", "ColumnIndex", "WarningId", "WarningMessage"]
+        if warning_list:
+            # Cross-check the header length
+            assert len(warning_list[0]) == len(fieldnames)
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in warning_list:
+            writer.writerow(row)
+        print("Warnings exported to '{}'".format(export_filename))
+
+
 def check_files(file_list=None, compiler="MSVC"):
 
     if file_list is None:
@@ -208,7 +244,10 @@ def check_files(file_list=None, compiler="MSVC"):
         # Check all logs
     # else:  has file_list
 
-    for filename in Path(".").glob(file_list):
+    find_file_list = Path(".").glob(file_list)
+    if not find_file_list:
+        print("[ERROR] No log find!")
+    for filename in find_file_list:
         print("Filename: {}".format(filename))
         #filepath = os.path.join("..", filename)
         with open(filename, "r") as file:
@@ -218,29 +257,11 @@ def check_files(file_list=None, compiler="MSVC"):
             warning_list = warning_filter(warning_list)
 
             # TODO: Relative path
-
             export_filename = os.path.splitext(filename)[0] + "_found_warnings.txt"
+            export_to_text_file(export_filename, warning_list)
 
-            if len(warning_list) != 0:
-                print("Found warning(s) at files:")
-                # warning_string = "".join("    " + str(item) + "\n" for item in warning_list)
-                # print("Found warning(s) at file: '{}'\n"
-                #     "{}".format(
-                #            filename, warning_string))
-                print("-" * 120)
-                warning_list_in_string = print_all_warning_as_list(warning_list)
-                print("-" * 120)
-                print_all_warning_as_table(warning_list)
-                print("-" * 120)
-
-
-                with open(export_filename, "w+") as export_file:
-                    export_file.write(warning_list_in_string)
-                    print("Warnings exported to '{}'".format(export_filename))
-            else:
-                print("Not found warning at file '{}'".format(filename))
-                # TODO: Temporary solution for creating empty file (do not fail pipeline at artifacting)
-                open(export_filename, 'a').close()
+            export_filename = os.path.splitext(filename)[0] + "_found_warnings.csv"
+            export_to_csv(export_filename, warning_list)
 
 
 if __name__ == "__main__":
