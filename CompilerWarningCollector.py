@@ -225,7 +225,7 @@ def export_to_text_file(export_filename, warning_list):
 
 
 def export_to_csv(export_filename, warning_list):
-    with open(export_filename, mode='w') as csv_file:
+    with open(export_filename, mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = ["FilePath", "FileName", "LineNumber", "ColumnIndex", "WarningId", "WarningMessage"]
         if warning_list:
             # Cross-check the header length
