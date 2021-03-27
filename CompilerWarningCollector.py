@@ -225,14 +225,40 @@ def export_to_text_file(export_filename, warning_list):
 
 
 def export_to_csv(export_filename, warning_list):
+    workspace_directory = os.getenv("Build.Repository.LocalPath", None)
+    # Azure workspaces
+    removing_workspace_directories = [r"/home/vsts/work/1/s/", "D:\\a\\1\\s\\"]
+    # Update dictionary keys
+    for i in warning_list:
+        for k, v in i.items():
+            if k == 'FilePath':
+                del i[k]
+                i['Dir'] = v
+            elif k == 'LineNumber':
+                del i[k]
+                i['Line'] = v
+            elif k == 'ColumnIndex':
+                del i[k]
+                i['Col'] = v
+            elif k == 'WarningId':
+                del i[k]
+                i['WarnId'] = v
+    # Create CSV
     with open(export_filename, mode='w', newline='', encoding='utf-8') as csv_file:
-        fieldnames = ["FilePath", "FileName", "LineNumber", "ColumnIndex", "WarningId", "WarningMessage"]
+        fieldnames = ["Dir", "FileName", "Line", "Col", "WarnId", "WarningMessage"]
         if warning_list:
             # Cross-check the header length
             assert len(warning_list[0]) == len(fieldnames)
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         for row in warning_list:
+            # Update fields
+            if workspace_directory:
+                for remove_workspace in removing_workspace_directories:
+                    if row["Dir"].startswith(remove_workspace):
+                        row["Dir"] = row["Dir"].replace(remove_workspace, "")  # Remove unnecessary start part
+                        break
+            # Save fields
             writer.writerow(row)
         print("Warnings exported to '{}'".format(export_filename))
 
