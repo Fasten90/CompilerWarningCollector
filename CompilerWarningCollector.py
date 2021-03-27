@@ -253,11 +253,11 @@ def export_to_csv(export_filename, warning_list):
         writer.writeheader()
         for row in warning_list:
             # Update fields
-            if workspace_directory:
-                for remove_workspace in removing_workspace_directories:
-                    if row["Dir"].startswith(remove_workspace):
-                        row["Dir"] = row["Dir"].replace(remove_workspace, "")  # Remove unnecessary start part
-                        break
+            #if workspace_directory:
+            for remove_workspace in removing_workspace_directories:
+                if row["Dir"].startswith(remove_workspace):
+                    row["Dir"] = row["Dir"].replace(remove_workspace, "")  # Remove unnecessary start part
+                    break
             # Save fields
             writer.writerow(row)
         print("Warnings exported to '{}'".format(export_filename))
