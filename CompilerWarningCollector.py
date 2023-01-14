@@ -240,7 +240,7 @@ def export_to_csv(export_filename, warning_list):
             elif k == 'ColumnIndex':
                 new_item['Col'] = v
             elif k == 'WarningId':  # Same name
-                new_item['WarningId'] = v
+                new_item['WarnId'] = v
             elif k == 'WarningMessage':  # Same name
                 new_item['WarningMessage'] = v
         new_warn_list.append(new_item)
