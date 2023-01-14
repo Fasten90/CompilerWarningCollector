@@ -229,29 +229,30 @@ def export_to_csv(export_filename, warning_list):
     # Azure workspaces
     removing_workspace_directories = [r"/home/vsts/work/1/s/", "D:\\a\\1\\s\\"]
     # Update dictionary keys
+    new_warn_list = []
     for i in warning_list:
+        new_item = {}
         for k, v in i.items():
             if k == 'FilePath':
-                del i[k]
-                i['Dir'] = v
+                new_item['Dir'] = v
             elif k == 'LineNumber':
-                del i[k]
-                i['Line'] = v
+                new_item['Line'] = v
             elif k == 'ColumnIndex':
-                del i[k]
-                i['Col'] = v
-            elif k == 'WarningId':
-                del i[k]
-                i['WarnId'] = v
+                new_item['Col'] = v
+            elif k == 'WarningId':  # Same name
+                new_item['WarnId'] = v
+            elif k == 'WarningMessage':  # Same name
+                new_item['WarningMessage'] = v
+        new_warn_list.append(new_item)
     # Create CSV
     with open(export_filename, mode='w', newline='', encoding='utf-8') as csv_file:
         fieldnames = ["Dir", "FileName", "Line", "Col", "WarnId", "WarningMessage"]
-        if warning_list:
+        if new_warn_list:
             # Cross-check the header length
             assert len(warning_list[0]) == len(fieldnames)
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
-        for row in warning_list:
+        for row in new_warn_list:
             # Update fields
             #if workspace_directory:
             for remove_workspace in removing_workspace_directories:
