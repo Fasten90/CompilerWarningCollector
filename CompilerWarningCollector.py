@@ -252,7 +252,7 @@ def export_to_csv(export_filename, warning_list):
             assert len(warning_list[0]) == len(fieldnames)
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
-        for row in warning_list:
+        for row in new_warn_list:
             # Update fields
             #if workspace_directory:
             for remove_workspace in removing_workspace_directories:
